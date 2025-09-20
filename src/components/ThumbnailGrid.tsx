@@ -63,10 +63,10 @@ const ThumbnailGrid = ({ clips, currentClip, onClipSelect }: ThumbnailGridProps)
                 relative aspect-video cursor-pointer rounded-md overflow-hidden
                 transition-all duration-200 hover:scale-105 hover:shadow-clip
                 ${thumbnail.isFromCurrentClip 
-                  ? 'ring-2 ring-progress-green shadow-clip' 
+                  ? 'ring-2 ring-white shadow-clip' 
                   : 'ring-1 ring-clip-border hover:ring-clip-hover'
                 }
-                ${selectedThumbnail === thumbnail.id ? 'ring-progress-green-bright' : ''}
+                ${selectedThumbnail === thumbnail.id ? 'ring-white ring-2' : ''}
               `}
               onClick={() => handleThumbnailClick(thumbnail)}
             >
@@ -82,14 +82,14 @@ const ThumbnailGrid = ({ clips, currentClip, onClipSelect }: ThumbnailGridProps)
                 {Math.floor(thumbnail.time / 60)}:{(thumbnail.time % 60).toString().padStart(2, '0')}
               </div>
               
-              {/* Current Clip Indicator */}
+              {/* Current Clip Indicator - White mark */}
               {thumbnail.isFromCurrentClip && (
-                <div className="absolute top-1 left-1 w-2 h-2 bg-progress-green rounded-full"></div>
+                <div className="absolute top-1 left-1 w-3 h-3 bg-white rounded-full border-2 border-background shadow-md"></div>
               )}
               
               {/* Selection Indicator */}
               {selectedThumbnail === thumbnail.id && (
-                <div className="absolute inset-0 bg-progress-green/20 border-2 border-progress-green-bright rounded-md"></div>
+                <div className="absolute inset-0 bg-white/20 border-2 border-white rounded-md"></div>
               )}
             </div>
           ))}
@@ -105,7 +105,7 @@ const ThumbnailGrid = ({ clips, currentClip, onClipSelect }: ThumbnailGridProps)
               className={`
                 p-3 rounded-lg border cursor-pointer transition-colors
                 ${clip.id === currentClip.id 
-                  ? 'border-progress-green bg-progress-green/10 text-text-bright' 
+                  ? 'border-white bg-white/10 text-text-bright ring-1 ring-white' 
                   : 'border-clip-border bg-muted text-text-dim hover:bg-clip-hover'
                 }
               `}

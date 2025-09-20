@@ -122,7 +122,7 @@ const Timeline = ({ clips, currentClip, currentTime, onSeek, onClipSelect }: Tim
                   className={`
                     absolute top-0 h-full rounded transition-all duration-200
                     ${clip.id === currentClip.id 
-                      ? 'bg-progress-green border border-progress-green-bright' 
+                      ? 'bg-progress-green border-2 border-white' 
                       : 'bg-secondary border border-clip-border hover:bg-clip-hover'
                     }
                   `}
@@ -159,12 +159,12 @@ const Timeline = ({ clips, currentClip, currentTime, onSeek, onClipSelect }: Tim
                 </div>
               ))}
 
-              {/* Playhead */}
+              {/* Playhead - White indicator */}
               <div
-                className="absolute top-0 bottom-0 w-px bg-progress-green-bright shadow-lg z-10"
+                className="absolute top-0 bottom-0 w-0.5 bg-white shadow-lg z-10"
                 style={{ left: `${playheadPosition}%` }}
               >
-                <div className="absolute -top-1 -left-2 w-4 h-3 bg-progress-green-bright border border-background"></div>
+                <div className="absolute -top-1 -left-2 w-4 h-3 bg-white border border-background shadow-md"></div>
               </div>
 
               {/* Hover Indicator */}
