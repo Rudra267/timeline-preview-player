@@ -5,36 +5,25 @@ import { Slider } from '@/components/ui/slider';
 import ThumbnailGrid from './ThumbnailGrid';
 import Timeline from './Timeline';
 
-// Sample video clips data
-const videoClips = [
-  {
-    id: 1,
-    title: "010_0020_A",
-    duration: 17.25,
-    startFrame: 524,
-    thumbnail: "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=225&fit=crop",
-    videoSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-  },
-  {
-    id: 2,
-    title: "120_0040_A", 
-    duration: 14.3,
-    startFrame: 2812,
-    thumbnail: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=225&fit=crop",
-    videoSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
-  },
-  {
-    id: 3,
-    title: "030_0015_B",
-    duration: 9.8,
-    startFrame: 1456,
-    thumbnail: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=225&fit=crop", 
-    videoSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
-  }
-];
+// Single video clip data
+const videoClip = {
+  id: 1,
+  title: "010_0020_A",
+  duration: 143, // Total video duration in seconds
+  startFrame: 524,
+  thumbnails: [
+    "https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=225&fit=crop",
+    "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=225&fit=crop", 
+    "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=225&fit=crop",
+    "https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=400&h=225&fit=crop",
+    "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=225&fit=crop",
+    "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400&h=225&fit=crop"
+  ],
+  videoSrc: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+};
 
 const VideoEditor = () => {
-  const [currentClip, setCurrentClip] = useState(videoClips[0]);
+  const [currentClip] = useState(videoClip); // Single video clip
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -102,10 +91,13 @@ const VideoEditor = () => {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  const handleClipSelect = (clip: typeof videoClips[0]) => {
-    setCurrentClip(clip);
-    setIsPlaying(false);
-    setCurrentTime(0);
+  const handleClipSelect = (timeIndex: number) => {
+    const seekTime = timeIndex * 3; // 3-second intervals
+    const video = videoRef.current;
+    if (!video) return;
+    
+    video.currentTime = seekTime;
+    setCurrentTime(seekTime);
   };
 
   const handleTimelineSeek = (time: number) => {
@@ -124,13 +116,11 @@ const VideoEditor = () => {
           <div className="flex items-center gap-4">
             <h1 className="text-xl font-semibold text-text-bright">Video Editor</h1>
             <div className="flex items-center gap-2 text-sm text-text-dim">
-              <span>Shots</span>
-              <span>Show: All</span>
-              <span>Group by: Chronological</span>
+              <span>Single Video Timeline</span>
             </div>
           </div>
           <div className="text-sm text-text-dim">
-            {currentClip.title} | Duration: {currentClip.duration}s
+            {currentClip.title} | Duration: {formatTime(currentClip.duration)} | Current: {formatTime(currentTime)}
           </div>
         </div>
       </header>
@@ -140,10 +130,9 @@ const VideoEditor = () => {
         {/* Left Panel - Thumbnails */}
         <div className="w-2/3 border-r border-border">
           <ThumbnailGrid 
-            clips={videoClips}
-            currentClip={currentClip}
+            videoClip={videoClip}
             currentTime={currentTime}
-            onClipSelect={handleClipSelect}
+            onTimeSelect={handleClipSelect}
           />
         </div>
 
@@ -157,7 +146,7 @@ const VideoEditor = () => {
                   ref={videoRef}
                   src={currentClip.videoSrc}
                   className="w-full h-full object-contain"
-                  poster={currentClip.thumbnail}
+                  poster={currentClip.thumbnails[0]}
                 />
                 
                 {/* Video Overlay Controls */}
@@ -242,10 +231,10 @@ const VideoEditor = () => {
               <div className="space-y-2 text-sm">
                 <div className="text-text-bright font-medium">{currentClip.title}</div>
                 <div className="space-y-1 text-text-dim">
-                  <div>Duration: {currentClip.duration} sec</div>
+                  <div>Duration: {formatTime(currentClip.duration)}</div>
                   <div>Start Frame: {currentClip.startFrame}</div>
-                  <div>Assets: 4</div>
-                  <div>Tasks: 7</div>
+                  <div>Current Segment: {Math.floor(currentTime / 3) + 1}</div>
+                  <div>Total Segments: {Math.ceil(currentClip.duration / 3)}</div>
                 </div>
               </div>
             </div>
@@ -255,11 +244,9 @@ const VideoEditor = () => {
 
       {/* Bottom Timeline */}
       <Timeline 
-        clips={videoClips}
-        currentClip={currentClip}
+        videoClip={videoClip}
         currentTime={currentTime}
         onSeek={handleTimelineSeek}
-        onClipSelect={handleClipSelect}
       />
     </div>
   );
