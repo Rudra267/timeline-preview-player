@@ -47,6 +47,16 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Video editor specific colors
+        "video-bg": "hsl(var(--video-bg))",
+        "thumbnail-bg": "hsl(var(--thumbnail-bg))",
+        "timeline-bg": "hsl(var(--timeline-bg))",
+        "progress-green": "hsl(var(--progress-green))",
+        "progress-green-bright": "hsl(var(--progress-green-bright))",
+        "clip-border": "hsl(var(--clip-border))",
+        "clip-hover": "hsl(var(--clip-hover))",
+        "text-bright": "hsl(var(--text-bright))",
+        "text-dim": "hsl(var(--text-dim))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
