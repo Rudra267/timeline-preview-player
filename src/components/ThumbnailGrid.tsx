@@ -12,6 +12,7 @@ interface Clip {
 interface ThumbnailGridProps {
   clips: Clip[];
   currentClip: Clip;
+  currentTime: number; // Add current time to track playback
   onClipSelect: (clip: Clip) => void;
 }
 
@@ -26,15 +27,21 @@ const generateThumbnails = (clip: Clip) => {
   }));
 };
 
-const ThumbnailGrid = ({ clips, currentClip, onClipSelect }: ThumbnailGridProps) => {
+const ThumbnailGrid = ({ clips, currentClip, currentTime, onClipSelect }: ThumbnailGridProps) => {
   const [selectedThumbnail, setSelectedThumbnail] = useState<string | null>(null);
+
+  // Calculate which thumbnail should be marked as current based on playback time
+  const getCurrentThumbnailIndex = (clip: Clip, time: number) => {
+    return Math.floor(time / 3); // 3-second intervals
+  };
 
   // Generate all thumbnails from all clips
   const allThumbnails = clips.flatMap(clip => 
-    generateThumbnails(clip).map(thumb => ({
+    generateThumbnails(clip).map((thumb, index) => ({
       ...thumb,
       clip,
-      isFromCurrentClip: clip.id === currentClip.id
+      isFromCurrentClip: clip.id === currentClip.id,
+      isCurrentTimeThumb: clip.id === currentClip.id && index === getCurrentThumbnailIndex(currentClip, currentTime)
     }))
   );
 
@@ -62,11 +69,13 @@ const ThumbnailGrid = ({ clips, currentClip, onClipSelect }: ThumbnailGridProps)
               className={`
                 relative aspect-video cursor-pointer rounded-md overflow-hidden
                 transition-all duration-200 hover:scale-105 hover:shadow-clip
-                ${thumbnail.isFromCurrentClip 
+                ${thumbnail.isCurrentTimeThumb 
                   ? 'ring-2 ring-white shadow-clip' 
+                  : thumbnail.isFromCurrentClip
+                  ? 'ring-2 ring-progress-green shadow-clip' 
                   : 'ring-1 ring-clip-border hover:ring-clip-hover'
                 }
-                ${selectedThumbnail === thumbnail.id ? 'ring-white ring-2' : ''}
+                ${selectedThumbnail === thumbnail.id ? 'ring-2 ring-white' : ''}
               `}
               onClick={() => handleThumbnailClick(thumbnail)}
             >
@@ -82,9 +91,14 @@ const ThumbnailGrid = ({ clips, currentClip, onClipSelect }: ThumbnailGridProps)
                 {Math.floor(thumbnail.time / 60)}:{(thumbnail.time % 60).toString().padStart(2, '0')}
               </div>
               
-              {/* Current Clip Indicator - White mark */}
-              {thumbnail.isFromCurrentClip && (
+              {/* Current Time Thumbnail Indicator - White mark only for current playing segment */}
+              {thumbnail.isCurrentTimeThumb && (
                 <div className="absolute top-1 left-1 w-3 h-3 bg-white rounded-full border-2 border-background shadow-md"></div>
+              )}
+              
+              {/* Current Clip Indicator - Green mark for other thumbnails in current clip */}
+              {thumbnail.isFromCurrentClip && !thumbnail.isCurrentTimeThumb && (
+                <div className="absolute top-1 left-1 w-2 h-2 bg-progress-green rounded-full"></div>
               )}
               
               {/* Selection Indicator */}

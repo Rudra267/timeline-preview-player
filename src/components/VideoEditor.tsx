@@ -142,6 +142,7 @@ const VideoEditor = () => {
           <ThumbnailGrid 
             clips={videoClips}
             currentClip={currentClip}
+            currentTime={currentTime}
             onClipSelect={handleClipSelect}
           />
         </div>
