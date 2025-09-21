@@ -26,7 +26,7 @@ const ThumbnailGrid = ({ videoSrc, currentTime, onThumbnailClick }) => {
         newThumbnails.push({
           id: i,
           time: time,
-          src: generateThumbnail(video, time)
+          src: null // Will show placeholder instead of actual thumbnail
         });
       }
       
@@ -38,23 +38,6 @@ const ThumbnailGrid = ({ videoSrc, currentTime, onThumbnailClick }) => {
     };
   }, [videoSrc]);
 
-  const generateThumbnail = (video, time) => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = 160;
-    canvas.height = 90;
-
-    // Create a promise to handle async thumbnail generation
-    return new Promise((resolve) => {
-      const tempVideo = video.cloneNode();
-      tempVideo.currentTime = time;
-      
-      tempVideo.addEventListener('seeked', () => {
-        ctx.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL());
-      }, { once: true });
-    });
-  };
 
   const formatTime = (time) => {
     const minutes = Math.floor(time / 60);
@@ -88,16 +71,17 @@ const ThumbnailGrid = ({ videoSrc, currentTime, onThumbnailClick }) => {
                 }`}
                 onClick={() => onThumbnailClick(thumbnail.time)}
               >
-                <div className="aspect-video bg-muted flex items-center justify-center">
-                  {thumbnail.src ? (
-                    <img
-                      src={thumbnail.src}
-                      alt={`Frame at ${formatTime(thumbnail.time)}`}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="text-muted-foreground text-xs">Loading...</div>
-                  )}
+                <div className="aspect-video bg-muted flex items-center justify-center relative">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="w-8 h-8 mx-auto mb-2 rounded-full bg-primary/20 flex items-center justify-center">
+                        <div className="w-3 h-3 bg-primary/60 rounded-full"></div>
+                      </div>
+                      <div className="text-xs font-medium text-foreground">
+                        {formatTime(thumbnail.time)}
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 
                 <div className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2 ${
